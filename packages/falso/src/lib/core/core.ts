@@ -2,6 +2,7 @@ import { random } from '../random';
 
 export interface FakeOptions {
   length?: number;
+  limit?: number;
   locale?: any | string[];
 }
 
@@ -18,9 +19,15 @@ export type Return<T, O extends FakeOptions> = [O] extends [never]
 type FactoryFunction<T> = (i: number) => T;
 
 export function fake<T, Options extends FakeOptions>(
-  data: Readonly<T[]> | FactoryFunction<T>,
+  data: string[],
   options?: Options
 ): Return<T, Options> {
+
+  const limit = options?.limit || 0;
+  if (options?.limit) {
+    data = data.filter(item => item.length >= limit)
+  }
+
   const dataSource = Array.isArray(data)
     ? () => randElement(data)
     : (data as FactoryFunction<T>);
